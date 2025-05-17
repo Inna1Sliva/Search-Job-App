@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 
@@ -53,14 +54,14 @@ import kotlinx.serialization.Serializable
 
 
 @Composable
-fun MainScreen(){
+fun MainScreen(dataViewModel: DataViewModel){
     val NavHostController  = rememberNavController()
     NavHost(
         navController= NavHostController,
         startDestination= "main"
     ){
         composable("main"){
-            MainContent(NavHostController)
+            MainContent(NavHostController,dataViewModel)
 
         }
         composable("vacancies") {
@@ -73,7 +74,8 @@ fun MainScreen(){
 
 }
 @Composable
-fun MainContent(navController: NavHostController ){
+fun MainContent(navController: NavHostController,
+                dataViewModel: DataViewModel){
     val navBottomNavigation  = rememberNavController()
     Scaffold (
         bottomBar = {
@@ -87,14 +89,13 @@ fun MainContent(navController: NavHostController ){
         ){
 
             composable("Поиск") {
-                SearchScreen(openSearchScreen = {
-                    navController.navigate("vacancies")
-                })
+                SearchScreen(dataViewModel)//,openSearchScreen = {
+               // navController.navigate("vacancies")
             }
-
         }
 
     }
+
 }
 
 @Composable

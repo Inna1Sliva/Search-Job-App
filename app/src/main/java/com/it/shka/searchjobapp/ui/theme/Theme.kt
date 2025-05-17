@@ -10,7 +10,10 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -49,8 +52,8 @@ fun SearchJobAppTheme(
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
-
     }
+
 
 
     MaterialTheme(

@@ -1,10 +1,10 @@
 package com.it.shka.data.model
 
 data class Vacancy(
-    val address: Address,
-    val appliedNumber: Int,
-    val company: String,
-    val description: String,
+    val address: List<String> ,
+    val appliedNumber: String = "",
+    val company: String ="" ,
+    val description: String="",
     val experience: Experience,
     val id: String,
     val isFavorite: Boolean,

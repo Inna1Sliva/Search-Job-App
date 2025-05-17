@@ -16,18 +16,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.it.shka.searchjobapp.screens.SearchScreen
 import com.it.shka.searchjobapp.ui.theme.SearchJobAppTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
+    private val vm: DataViewModel by viewModel<DataViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             SearchJobAppTheme {
 
-                MainScreen()
+                MainScreen(vm)
             }
         }
     }
