@@ -34,6 +34,8 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(platform(libs.firebase.bom))
+    implementation (libs.firebase.database.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
