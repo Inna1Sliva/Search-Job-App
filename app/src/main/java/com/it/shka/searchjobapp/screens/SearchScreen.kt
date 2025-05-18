@@ -1,6 +1,11 @@
 package com.it.shka.searchjobapp.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,10 +17,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -26,132 +36,379 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.it.shka.data.model.Offer
+import com.it.shka.data.model.Vacancy
 import com.it.shka.searchjobapp.DataViewModel
 import com.it.shka.searchjobapp.IconId
 import com.it.shka.searchjobapp.R
+import java.text.SimpleDateFormat
+import java.util.Locale
+
 //
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchScreen(viewModel:DataViewModel){
-   // var offer = remember { mutableStateListOf<Offer>() }
+   val scrollState =rememberScrollState()
     val offer = viewModel.offerState.collectAsState()
+    val _nVacancy = viewModel.getFirstNItems().collectAsState()
  //  val offer = viewModel.offerState.collectAsState(emptyList())
 
 
     Column(modifier = Modifier
         .fillMaxSize()
         .background(color = Color.Black)
+        .scrollable(scrollState, orientation = Orientation.Vertical)
     ) {
-        Row (modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
-            Box(modifier = Modifier
-                .wrapContentSize()
-                .background(color = colorResource(R.color.search_bag), shape = RoundedCornerShape(8.dp))) {
+        ) {
+            Box(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(
+                        color = colorResource(R.color.search_bag),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            ) {
                 Row {
                     IconButton(
                         onClick = {}
                     ) {
-                        Icon(modifier = Modifier
-                            .size(width = 25.dp, height = 25.dp),
-                            painter = painterResource(R.drawable.icon_search), contentDescription = "",
+                        Icon(
+                            modifier = Modifier
+                                .size(width = 25.dp, height = 25.dp),
+                            painter = painterResource(R.drawable.icon_search),
+                            contentDescription = "",
                             tint = colorResource(R.color.Basic_Grey_4)
                         )
                     }
-                    BasicTextField(modifier = Modifier
-                        .wrapContentSize()
-                        .align(Alignment.CenterVertically)
-                        .width(280.dp) ,
+                    BasicTextField(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .align(Alignment.CenterVertically)
+                            .width(280.dp),
                         value = "textWhere.value",
                         onValueChange = {//textWhere.value = it
-                             },
+                        },
                         decorationBox = {
-                            Text("Должность, ключевые слова",
+                            Text(
+                                "Должность, ключевые слова",
                                 fontSize = 16.sp,
-                                color = colorResource(R.color.search_text))
+                                color = colorResource(R.color.search_text)
+                            )
                         }
                     )
                 }
 
             }
-            Spacer(modifier = Modifier
-                .width(16.dp))
+            Spacer(
+                modifier = Modifier
+                    .width(16.dp)
+            )
 
-            IconButton(modifier = Modifier
-                .wrapContentSize()
-                .background(color = colorResource(R.color.search_bag), shape = RoundedCornerShape(8.dp)),
+            IconButton(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(
+                        color = colorResource(R.color.search_bag),
+                        shape = RoundedCornerShape(8.dp)
+                    ),
                 onClick = {}
             ) {
-                Icon(modifier = Modifier
-                    .size(width = 24.dp, height = 24.dp),
+                Icon(
+                    modifier = Modifier
+                        .size(width = 24.dp, height = 24.dp),
                     painter = painterResource(R.drawable.icon_filter), contentDescription = "",
                     tint = Color.White
                 )
             }
         }//поиск
-        LazyRow(modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp)
-            ){
-            items(listOf(offer)){ data->
-                data.value.forEach {
-                    Box(modifier = Modifier
-                        .size(width = 150.dp, height = 132.dp)
-                        .padding(end = 10.dp)
-                        .background(color = colorResource(R.color.vacancy_bag),
-                            shape = RoundedCornerShape(8.dp))){
-                        Column (modifier = Modifier
-                            .padding(8.dp)
-                        ){
-                            // Иконка
-                            val iconId = IconId.fromIconIdStrinf(it.id)
-                            val iconRes = iconId?.let { getIconResource(it) }
-                            if (iconRes != null){
-                                Icon(modifier = Modifier
-                                    .size(width = 32.dp, height = 32.dp),
-                                    painter = painterResource(id = iconRes),
-                                    contentDescription = it.id)
-                            }else{
-                                Spacer(modifier = Modifier
-                                    .size(width = 32.dp, height = 32.dp))
-                            }
-                            //Teкст
-                            Text(modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top=10.dp),
-                                text =it.title ,
-                                color = Color.White,
-                                fontSize = 14.sp,
-                                overflow = TextOverflow.Clip
-                            )
-                            //кнопка boolean
-                            if (it.button.isNotEmpty()){
-                                Text(text = it.button, color = Color.Green, fontSize = 14.sp)
-                            }else{
-                                Text(text = "", color = Color.Green, fontSize = 14.sp)
 
-                            }
-                        }
-                    }
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp)
+        ) {
+            items(listOf(offer)) { data ->
+                data.value.forEach { offer->
+                   ItemListOffer(offer)
+                }//items
+
+            }
+        }
+//вакансии
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp)
+
+        ) {
+            stickyHeader {
+                // текст вакансии
+                Text(modifier = Modifier
+                        .padding(bottom = 16.dp, top = 20.dp)
+                    .fillMaxWidth()
+                    .background(Color.Black),
+                    text = "Вакансии для вас",
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+            }
+            items(listOf(_nVacancy)) { vacancy ->
+                vacancy.value.forEach { vacancy ->
+                    ItemListVacancy(vacancy)
                 }
 
             }
         }
-        // текст вакансии
-        Text(
+        Button(
             modifier = Modifier
-                .padding(start = 16.dp, top= 20.dp),
-            text = "Вакансии для вас",
-            color = Color.White,
-            fontSize = 20.sp
-        )
+                .fillMaxWidth()
+                .padding(15.dp)
+                .background(color = colorResource(R.color.Special_Blue), shape = RoundedCornerShape(8.dp)),
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.Special_Blue),
+                contentColor = colorResource(R.color.Special_Blue)
+            )) {
+            Text("Еще 143 вакансии",
+                fontSize = 14.sp
+            )
+        }
+    }//end colum
 
+}
+@Composable
+fun ItemListVacancy(vacancy: Vacancy) {
+    Column(
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(bottom = 16.dp)
+            .background(
+                color = colorResource(R.color.vacancy_bag),
+                shape = RoundedCornerShape(8.dp)
+            )
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+
+        ) {
+            Column(
+                modifier = Modifier
+                    .width(250.dp)
+            ) {
+                //текст просмотр
+                if (vacancy.lookingNumber != null) {
+                    Text(
+                        text = "Сейчас просматривает ${vacancy.lookingNumber} человек",
+                        color = colorResource(R.color.button_color),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Left
+                    )
+                } else {
+                    Text(
+                        text = "",
+                        color = colorResource(R.color.button_color),
+                        fontSize = 14.sp
+                    )
+                }
+
+                //наименование вакансии
+                Text(
+                    modifier = Modifier
+                        .padding(top = 5.dp),
+                    text = vacancy.title,
+                    color = Color.White,
+                    fontSize = 16.sp
+                ) //1500-2900 Br
+                //зп
+                Text(
+                    modifier = Modifier
+                        .padding(top = 5.dp),
+                    text = vacancy.full,
+                    color = Color.White,
+                    fontSize = 20.sp
+                )
+
+
+                //город
+                Text(
+                    modifier = Modifier
+                        .padding(top = 5.dp),
+                    text = vacancy.town,
+                    color = Color.White,
+                    fontSize = 14.sp
+                )
+                //компани
+                Row(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                ) {
+                    Text(
+                        text = vacancy.company,
+                        color = Color.White,
+                        fontSize = 14.sp
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .padding(start = 5.dp)
+                            .align(Alignment.CenterVertically)
+                            .size(width = 16.dp, height = 16.dp),
+                        painter = painterResource(R.drawable.icon_check),
+                        contentDescription = "icon_check",
+                        tint = colorResource(R.color.Basic_Grey_3)
+                    )
+                }
+                //опыт работы //
+                Row(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .size(width = 16.dp, height = 16.dp),
+                        painter = painterResource(R.drawable.icon_skill),
+                        contentDescription = "icon_check",
+                        tint = Color.White
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 5.dp),
+                        text = vacancy.previewText,
+                        color = Color.White,
+                        fontSize = 14.sp
+                    )
+
+                }
+                // дата публикации
+                Text(
+                    modifier = Modifier
+                        .padding(top = 5.dp),
+                    text = "${getMonthString(vacancy.publishedDate)}",
+                    color = colorResource(R.color.Basic_Grey_3),
+                    fontSize = 14.sp
+                )
+
+            }
+            Spacer(
+                modifier = Modifier
+                    .width(50.dp)
+            )
+            //Добавить метод определения
+            if (vacancy.isFavorite == true) {
+                Icon(
+                    modifier = Modifier
+                        .size(width = 24.dp, height = 24.dp),
+                    painter = painterResource(R.drawable.icon_favorits),
+                    tint = colorResource(R.color.Basic_Grey_4),
+                    contentDescription = "folover"
+                )
+            } else {
+                Icon(
+                    modifier = Modifier
+                        .size(width = 24.dp, height = 24.dp),
+                    painter = painterResource(R.drawable.favorite),
+                    tint = Color.Blue,
+                    contentDescription = "folover"
+                )
+            }
+
+
+        }
+        //button
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(
+                    color = colorResource(R.color.button_color),
+                    shape = RoundedCornerShape(50.dp)
+                ),
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.button_color),
+                contentColor = colorResource(R.color.button_color)
+            )
+        ) {
+            Text(
+                text = "Откликнуться",
+                color = Color.White,
+                fontSize = 14.sp
+            )
+        }
     }
+}
+@Composable
+fun ItemListOffer(data: Offer){
+    Box(
+        modifier = Modifier
+            .size(width = 150.dp, height = 132.dp)
+            .padding(end = 10.dp)
+            .background(
+                color = colorResource(R.color.vacancy_bag),
+                shape = RoundedCornerShape(8.dp)
+            )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+        ) {
+            // Иконка
+            val iconId = IconId.fromIconIdStrinf(data.id)
+            val iconRes = iconId?.let { getIconResource(it) }
+            if (iconRes != null) {
+                Icon(
+                    modifier = Modifier
+                        .size(width = 32.dp, height = 32.dp),
+                    painter = painterResource(id = iconRes),
+                    contentDescription = data.id
+                )
+            } else {
+                Spacer(
+                    modifier = Modifier
+                        .size(width = 32.dp, height = 32.dp)
+                )
+            }
+            //Teкст
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                text = data.title,
+                color = Color.White,
+                fontSize = 14.sp,
+                overflow = TextOverflow.Clip
+            )
+            //кнопка boolean
+            if (data.button.isNotEmpty()) {
+                Text(text = data.button, color = Color.Green, fontSize = 14.sp)
+            } else {
+                Text(text = "", color = Color.Green, fontSize = 14.sp)
+
+            }
+        }
+    }
+}
+@Composable
+fun getMonthString(dataString: String): String{
+    val inputFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("d MMMM", Locale("ru"))
+    val date = inputFormat.parse(dataString) ?: return "Некорректная дата"
+    val formattedDate = outputFormat.format(date)
+    return "Опубликовано $formattedDate"
 }
 @Composable
 fun getIconResource(iconId: IconId): Int{
