@@ -33,7 +33,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.it.shka.data.model.Vacancy
+import com.it.shka.searchjobapp.DataViewModel
 import com.it.shka.searchjobapp.R
+import kotlinx.coroutines.flow.StateFlow
 import java.nio.file.WatchEvent
 
 //@Preview(showBackground = true)
@@ -120,7 +122,7 @@ Spacer(modifier = Modifier
             items(listOf<Vacancy>(
 
             )) { data->
-                ItemListVacancy()
+              //  ItemListVacancy()
             }
 
         }
@@ -128,94 +130,113 @@ Spacer(modifier = Modifier
     }
 
 }
-@Preview(showBackground = true)
 @Composable
-fun ItemListVacancy(){//item: Vacancy
+fun ItemListVacancy(vacancy: List<Vacancy>, vm: DataViewModel){//item: Vacancy
     Column (
         modifier = Modifier
             .wrapContentSize()
             .background(color = colorResource(R.color.vacancy_bag), shape = RoundedCornerShape(8.dp))
     ){
-Row (modifier = Modifier
-    .padding(16.dp)
-    .fillMaxWidth(),
-    horizontalArrangement = Arrangement.SpaceBetween
+        vacancy.forEach { data->
+            Row (modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
 
-){
-    Column(modifier = Modifier
-        .width(219.dp)
-    ) {
-        //текст просмотр
-       Text(text = "Сейчас просматривает 1 человек",
-           color = colorResource(R.color.button_color),
-           fontSize = 14.sp)
-        //наименование вакансии
-        Text(modifier = Modifier
-            .padding(top = 5.dp),
-            text = "Дизайнер для маркетплейсов Wildberries, Ozon",
-            color = Color.White,
-            fontSize = 16.sp) //1500-2900 Br
-        //зп
-        Text(
-            modifier = Modifier
-                .padding(top = 5.dp),
-            text = "1500-2900 Br",
-            color = Color.White,
-            fontSize = 20.sp)
-        //город
-        Text(modifier = Modifier
-            .padding(top = 5.dp),
-            text = "Минск",
-            color = Color.White,
-            fontSize = 14.sp)
-            //адресс
-        Row(modifier = Modifier
-            .padding(top = 5.dp)) {
-            Text(text = "Еком дизайн",
-                color = Color.White,
-                fontSize = 14.sp)
-            Icon(modifier = Modifier
-                .padding(start = 2.dp)
-                .size(width = 16.dp, height = 16.dp),
-                painter = painterResource(R.drawable.icon_check),
-                contentDescription = "icon_check",
-                tint = colorResource(R.color.Basic_Grey_3))
+            ){
+                Column(modifier = Modifier
+                    .width(219.dp)
+                ) {
+                    //текст просмотр
+                        if (data.lookingNumber !=null){
+                            Text(text = "Сейчас просматривает ${data.lookingNumber} человек",
+                                color = colorResource(R.color.button_color),
+                                fontSize = 14.sp)
+                        }else{
+                            Text(text = "",
+                                color = colorResource(R.color.button_color),
+                                fontSize = 14.sp)
+                        }
+
+                    //наименование вакансии
+                    Text(modifier = Modifier
+                        .padding(top = 5.dp),
+                        text = data.title,
+                        color = Color.White,
+                        fontSize = 16.sp) //1500-2900 Br
+                    //зп
+
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 5.dp),
+                        text = "1500-2900 Br",
+                        color = Color.White,
+                        fontSize = 20.sp)
+                    //город
+                    Text(modifier = Modifier
+                        .padding(top = 5.dp),
+                        text = data.town,
+                        color = Color.White,
+                        fontSize = 14.sp)
+                    //компани
+                    Row(modifier = Modifier
+                        .padding(top = 5.dp)) {
+                        Text(text = data.company,
+                            color = Color.White,
+                            fontSize = 14.sp)
+                        Icon(modifier = Modifier
+                            .padding(start = 2.dp)
+                            .size(width = 16.dp, height = 16.dp),
+                            painter = painterResource(R.drawable.icon_check),
+                            contentDescription = "icon_check",
+                            tint = colorResource(R.color.Basic_Grey_3))
+                    }
+                    //опыт работы //
+                    Row(modifier = Modifier
+                        .padding(top = 5.dp)) {
+                        Icon(modifier = Modifier
+
+                            .size(width = 16.dp, height = 16.dp),
+                            painter = painterResource(R.drawable.icon_skill),
+                            contentDescription = "icon_check",
+                            tint = Color.White)
+
+                        Text(modifier = Modifier
+                            .padding(start = 5.dp),
+                            text = data.previewText,
+                            color = Color.White,
+                            fontSize = 14.sp)
+
+                    }
+                    // дата публикации
+                    Text(modifier = Modifier
+                        .padding(top = 5.dp),
+                        text = "",
+                        color = colorResource(R.color.Basic_Grey_3),
+                        fontSize = 14.sp)
+
+                }
+                Spacer(modifier = Modifier
+                    .width(50.dp))
+                //Добавить метод определения
+                if (data.isFavorite==true){
+                    Icon(modifier = Modifier
+                        .size(width =24.dp, height = 24.dp ),
+                        painter = painterResource(R.drawable.icon_favorits),
+                        tint = colorResource(R.color.Basic_Grey_4),
+                        contentDescription = "folover")
+                }else{
+                    Icon(modifier = Modifier
+                        .size(width =24.dp, height = 24.dp ),
+                        painter = painterResource(R.drawable.favorite),
+                        tint = Color.Blue,
+                        contentDescription = "folover")
+                }
+
+
+            }
         }
-            //опыт работы //
-        Row(modifier = Modifier
-            .padding(top = 5.dp)) {
-            Icon(modifier = Modifier
 
-                .size(width = 16.dp, height = 16.dp),
-                painter = painterResource(R.drawable.icon_skill),
-                contentDescription = "icon_check",
-                tint = Color.White)
-
-            Text(modifier = Modifier
-                .padding(start = 5.dp),
-                text = "Опыт от 1 года до 3 лет",
-                color = Color.White,
-                fontSize = 14.sp)
-
-        }
-        // дата публикации
-        Text(modifier = Modifier
-            .padding(top = 5.dp),
-            text = "Опубликовано 16 февраля",
-            color = colorResource(R.color.Basic_Grey_3),
-            fontSize = 14.sp)
-
-    }
-    Spacer(modifier = Modifier
-        .width(50.dp))
-    //Добавить метод определения
-    Icon(modifier = Modifier
-        .size(width =24.dp, height = 24.dp ),
-        painter = painterResource(R.drawable.icon_favorits),
-        tint = colorResource(R.color.Basic_Grey_4),
-        contentDescription = "folover")
-
-}
         //button
         Button(modifier = Modifier
             .fillMaxWidth()

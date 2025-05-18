@@ -9,11 +9,12 @@
     <color name="white">#FFFFFFFF</color>
     <color name="Basic_Grey_4">#9F9F9F</color>
     <color name="Basic_Grey_3">#858688</color>
-
     <color name="search_bag">#313234</color>
     <color name="search_text">#9F9F9F</color>
     <color name="vacancy_bag">#222325</color>
     <color name="button_color">#4CB24E</color>
+    <color name="Special_Blue">#2B7EFE</color>
+
 
 
 </resources>

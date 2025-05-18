@@ -1,18 +1,22 @@
 package com.it.shka.data.model
 
 data class Vacancy(
-    val address: List<String> ,
-    val appliedNumber: String = "",
-    val company: String ="" ,
+    val appliedNumber: String="",
+    val company: String="",
     val description: String="",
-    val experience: Experience,
-    val id: String,
-    val isFavorite: Boolean,
-    val lookingNumber: Int,
-    val publishedDate: String,
-    val questions: List<String>,
-    val responsibilities: String,
-    val salary: Salary,
-    val schedules: List<String>,
-    val title: String
+    val full: String="",
+    val fullP: String="",
+    val house: String="",
+    val id: String="",
+    val isFavorite: Boolean?=null,
+    val short:String="",
+    val lookingNumber: String?="",
+    val previewText: String="",
+    val publishedDate: String="",
+    val pull: String="",
+    val questions: List<String>? =null,
+    val responsibilities: String="",
+    val street: String="",
+    val title: String="",
+    val town: String=""
 )

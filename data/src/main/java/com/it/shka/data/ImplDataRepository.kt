@@ -1,19 +1,12 @@
 package com.it.shka.data
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.it.shka.data.model.Offer
+import com.it.shka.data.model.Vacancy
 import com.it.shka.domain.DataRepository
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 
@@ -21,25 +14,9 @@ class ImplDataRepository(private val dataReference: FirebaseDatabase ): DataRepo
    private val _offerState:MutableStateFlow<List<Offer>> = MutableStateFlow(emptyList())
    val offerState:StateFlow<List<Offer>> get() = _offerState
 
-    fun getOfferData(): Flow<List<Offer>> = callbackFlow {
-        val listener = object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-               val list = mutableListOf<Offer>()
-                for (dataSnaphot in snapshot.children){
-                    val data = dataSnaphot.getValue(Offer::class.java)
-                    data?.let { list.add(it.copy(id=dataSnaphot.key ?:"")) }
-                }
-                trySend(list).isSuccess
-            }
+    private val _vacancyState:MutableStateFlow<List<Vacancy>> = MutableStateFlow(emptyList())
+    val vacancyState:StateFlow<List<Vacancy>> get() = _vacancyState
 
-            override fun onCancelled(error: DatabaseError) {
-              close(error.toException())
-            }
-
-        }
-        dataReference.getReference("offers").addValueEventListener(listener)
-        awaitClose{ dataReference.getReference("offers").removeEventListener(listener)}
-    }
     override suspend fun getOffer() {
         try {
             val snapshot = dataReference.getReference("offers").get().await()
@@ -61,6 +38,21 @@ class ImplDataRepository(private val dataReference: FirebaseDatabase ): DataRepo
     }
 
     override suspend fun getVacancy() {
-        TODO("Not yet implemented")
+        try {
+            val snapshot = dataReference.getReference("vacancies").get().await()
+            if (snapshot.exists()){
+                var vacancyList = mutableListOf<Vacancy>()
+                for (dataSnaphot in snapshot.children){
+                    val data = dataSnaphot.getValue(Vacancy::class.java)
+                    vacancyList.add(data!!)
+                    Log.d("OFFER", "${data}")
+
+                }
+                _vacancyState.value = vacancyList
+
+            }
+        }catch (e:Exception){
+            _vacancyState.value = emptyList()
+        }
     }
 }
