@@ -1,5 +1,6 @@
 package com.it.shka.searchjobapp.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.it.shka.data.model.Vacancy
 import com.it.shka.searchjobapp.DataViewModel
 import com.it.shka.searchjobapp.R
@@ -40,7 +43,9 @@ import java.nio.file.WatchEvent
 
 //@Preview(showBackground = true)
 @Composable
-fun VacanciesScreen(){
+fun VacanciesScreen(viewModel: DataViewModel, navController: NavController){
+    val vacancy = viewModel.vacancyState.collectAsState()
+
     var textWhere = remember { mutableStateOf( "" ) }
     Column(modifier = Modifier
         .fillMaxSize()
@@ -118,11 +123,17 @@ Spacer(modifier = Modifier
         }
     }
         LazyColumn(modifier = Modifier
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
             .fillMaxWidth()){
-            items(listOf<Vacancy>(
+            items(listOf(vacancy)) { data->
+                data.value.forEach { vacancy->
+                    ItemListVacancy(vacancy, onItemClick = {vacancy->
+                      viewModel.setDetailVacancy(vacancy)
+                        navController.navigate("detaile")
 
-            )) { data->
-              //  ItemListVacancy()
+                    })
+                }
+
             }
 
         }
@@ -131,7 +142,7 @@ Spacer(modifier = Modifier
 
 }
 @Composable
-fun ItemListVacancy(vacancy: List<Vacancy>, vm: DataViewModel){//item: Vacancy
+fun ItemList(vacancy: List<Vacancy>, vm: DataViewModel){//item: Vacancy
     Column (
         modifier = Modifier
             .wrapContentSize()
