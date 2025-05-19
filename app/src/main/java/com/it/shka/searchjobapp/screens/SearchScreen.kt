@@ -1,8 +1,10 @@
 package com.it.shka.searchjobapp.screens
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,10 +43,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.it.shka.data.model.Offer
 import com.it.shka.data.model.Vacancy
 import com.it.shka.searchjobapp.DataViewModel
 import com.it.shka.searchjobapp.IconId
+import com.it.shka.searchjobapp.MainContent
 import com.it.shka.searchjobapp.R
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -52,17 +61,43 @@ import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchScreen(viewModel:DataViewModel){
-   val scrollState =rememberScrollState()
+fun MainSearch(viewModel:DataViewModel){
+   // val vacancy = viewModel.vacancyState.collectAsState()
+
+    val navController  = rememberNavController()
+    NavHost(
+        navController= navController,
+        startDestination= "start_search"
+    ){
+        composable("start_search"){
+            SearchScreen(viewModel, navController)
+        }
+        composable("vacancies") {
+            VacanciesScreen(viewModel, navController)
+        }
+        composable ("detaile"){
+            DetailsScreen(viewModel)
+            }
+
+        }
+
+}
+
+
+@Composable
+fun SearchScreen(viewModel:DataViewModel, navController: NavController){
+    val scrollState =rememberScrollState()
     val offer = viewModel.offerState.collectAsState()
     val _nVacancy = viewModel.getFirstNItems().collectAsState()
- //  val offer = viewModel.offerState.collectAsState(emptyList())
+    val vacancy = viewModel.vacancyState.collectAsState()
+    //  val offer = viewModel.offerState.collectAsState(emptyList())
 
 
     Column(modifier = Modifier
         .fillMaxSize()
         .background(color = Color.Black)
-        .scrollable(scrollState, orientation = Orientation.Vertical)
+        .verticalScroll(scrollState)
+
     ) {
         Row(
             modifier = Modifier
@@ -139,32 +174,36 @@ fun SearchScreen(viewModel:DataViewModel){
         ) {
             items(listOf(offer)) { data ->
                 data.value.forEach { offer->
-                   ItemListOffer(offer)
+                    ItemListOffer(offer)
                 }//items
 
             }
         }
+        // текст вакансии
+        Text(modifier = Modifier
+            .padding(start = 16.dp, bottom = 16.dp, top = 20.dp)
+            .fillMaxWidth()
+            .background(Color.Black),
+            text = "Вакансии для вас",
+            color = Color.White,
+            fontSize = 20.sp
+        )
 //вакансии
         LazyColumn(
             modifier = Modifier
+                .height(1100.dp)
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp)
 
         ) {
-            stickyHeader {
-                // текст вакансии
-                Text(modifier = Modifier
-                        .padding(bottom = 16.dp, top = 20.dp)
-                    .fillMaxWidth()
-                    .background(Color.Black),
-                    text = "Вакансии для вас",
-                    color = Color.White,
-                    fontSize = 20.sp
-                )
-            }
+
             items(listOf(_nVacancy)) { vacancy ->
                 vacancy.value.forEach { vacancy ->
-                    ItemListVacancy(vacancy)
+                    ItemListVacancy(vacancy, onItemClick = {vacancy->
+                        viewModel.setDetailVacancy(vacancy)
+                        navController.navigate("detaile")
+
+                    })
                 }
 
             }
@@ -174,12 +213,13 @@ fun SearchScreen(viewModel:DataViewModel){
                 .fillMaxWidth()
                 .padding(15.dp)
                 .background(color = colorResource(R.color.Special_Blue), shape = RoundedCornerShape(8.dp)),
-            onClick = {},
+            onClick = {navController.navigate("vacancies")},
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.Special_Blue),
                 contentColor = colorResource(R.color.Special_Blue)
             )) {
-            Text("Еще 143 вакансии",
+            Text(getSizeVacancy(vacancy.value.size),
+                color = Color.White,
                 fontSize = 14.sp
             )
         }
@@ -187,11 +227,20 @@ fun SearchScreen(viewModel:DataViewModel){
 
 }
 @Composable
-fun ItemListVacancy(vacancy: Vacancy) {
+fun getSizeVacancy(vacancy: Int): String{
+    return when(vacancy){
+        0-> ""
+        1->" 1 вакансия"
+        else -> "Еще $vacancy вакансии"
+    }
+}
+@Composable
+fun ItemListVacancy(vacancy: Vacancy, onItemClick: (Vacancy)-> Unit){
     Column(
         modifier = Modifier
             .wrapContentSize()
             .padding(bottom = 16.dp)
+            .clickable{onItemClick(vacancy)}
             .background(
                 color = colorResource(R.color.vacancy_bag),
                 shape = RoundedCornerShape(8.dp)
@@ -209,7 +258,7 @@ fun ItemListVacancy(vacancy: Vacancy) {
                     .width(250.dp)
             ) {
                 //текст просмотр
-                if (vacancy.lookingNumber != null) {
+                if (vacancy.lookingNumber?.isNotEmpty() == true) {
                     Text(
                         text = "Сейчас просматривает ${vacancy.lookingNumber} человек",
                         color = colorResource(R.color.button_color),
@@ -321,7 +370,7 @@ fun ItemListVacancy(vacancy: Vacancy) {
                     modifier = Modifier
                         .size(width = 24.dp, height = 24.dp),
                     painter = painterResource(R.drawable.favorite),
-                    tint = Color.Blue,
+                    tint = colorResource(R.color.Special_Blue),
                     contentDescription = "folover"
                 )
             }

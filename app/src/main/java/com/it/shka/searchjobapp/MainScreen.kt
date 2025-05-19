@@ -1,55 +1,33 @@
 package com.it.shka.searchjobapp
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import androidx.navigation.navigation
 import com.it.shka.searchjobapp.model.BottomNavItem
-import com.it.shka.searchjobapp.model.NavSearchScreen
-
-import com.it.shka.searchjobapp.screens.SearchScreen
+import com.it.shka.searchjobapp.screens.MainSearch
 import com.it.shka.searchjobapp.screens.VacanciesScreen
-import kotlinx.serialization.Serializable
 
 
 
@@ -65,7 +43,7 @@ fun MainScreen(dataViewModel: DataViewModel){
 
         }
         composable("vacancies") {
-            VacanciesScreen()
+            //VacanciesScreen(Da)
 
         }
 
@@ -80,6 +58,7 @@ fun MainContent(navController: NavHostController,
     Scaffold (
         bottomBar = {
             BottomNavigation(navBottomNavigation)
+          //  BadgedBox() { }
         }
     ){innerPadding->
         NavHost (
@@ -89,14 +68,17 @@ fun MainContent(navController: NavHostController,
         ){
 
             composable("Поиск") {
-                SearchScreen(dataViewModel)//,openSearchScreen = {
-               // navController.navigate("vacancies")
+                MainSearch(dataViewModel)
+                }
+
+
             }
+
         }
 
     }
 
-}
+
 
 @Composable
 fun BottomNavigation(navController: NavHostController ){

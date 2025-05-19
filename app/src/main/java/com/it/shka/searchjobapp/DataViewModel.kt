@@ -1,6 +1,7 @@
 package com.it.shka.searchjobapp
 
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.it.shka.data.ImplDataRepository
@@ -14,7 +15,9 @@ import kotlinx.coroutines.launch
 
 
 class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel() {
-   // val Count: StateFlow<List<Vacancy>> get() = _nState
+    private val _vacancyDetail = MutableStateFlow<List<Vacancy>>(emptyList())
+    val vacancyDetail: StateFlow<List<Vacancy>> get() = _vacancyDetail
+
     val offerState:StateFlow<List<Offer>> = dataRepository.offerState
     val vacancyState:StateFlow<List<Vacancy>> = dataRepository.vacancyState
 
@@ -25,6 +28,7 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
        viewModelScope.launch {
             dataRepository.getVacancy()
        }
+
     }
     fun getFirstNItems(): StateFlow<List<Vacancy>>{
          val _nState = MutableStateFlow<List<Vacancy>>(emptyList())
@@ -40,6 +44,16 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
 
         }
         return _nState
+    }
+    fun setDetailVacancy(vacancy: Vacancy){
+     //   val _vacancyState = MutableStateFlow<List<Vacancy>>(emptyList())
+        viewModelScope.launch {
+            val firstThree = mutableListOf<Vacancy>()
+            firstThree.add(vacancy)
+            _vacancyDetail.value = firstThree
+        }
+
+
     }
 
 

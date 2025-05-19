@@ -15,7 +15,7 @@ fun RootNavGraph(){
         startDestination= NavSearchScreen.ScreenVacancies.route
     ){
         composable(NavSearchScreen.ScreenVacancies.route) {
-            VacanciesScreen()
+           // VacanciesScreen()
 
         }
 
