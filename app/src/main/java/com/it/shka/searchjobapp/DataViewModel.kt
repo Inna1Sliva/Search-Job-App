@@ -18,6 +18,10 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
     private val _vacancyDetail = MutableStateFlow<List<Vacancy>>(emptyList())
     val vacancyDetail: StateFlow<List<Vacancy>> get() = _vacancyDetail
 
+    val _favoritState = MutableStateFlow<List<Vacancy>>(emptyList())
+
+    val favoritsState: StateFlow<List<Vacancy>>  = _favoritState
+
     val offerState:StateFlow<List<Offer>> = dataRepository.offerState
     val vacancyState:StateFlow<List<Vacancy>> = dataRepository.vacancyState
 
@@ -28,7 +32,7 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
        viewModelScope.launch {
             dataRepository.getVacancy()
        }
-
+        getFavoritVacancy()
     }
     fun getFirstNItems(): StateFlow<List<Vacancy>>{
          val _nState = MutableStateFlow<List<Vacancy>>(emptyList())
@@ -52,7 +56,20 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
             firstThree.add(vacancy)
             _vacancyDetail.value = firstThree
         }
+    }
+    fun getFavoritVacancy(){
+        viewModelScope.launch {
+            vacancyState.collect { vacancy->
+                val addFavorit = mutableListOf<Vacancy>()
+                for (favorit in  vacancy){
+                    if (favorit.lookingNumber?.isEmpty()==true){
+                        addFavorit.add(favorit)
+                    }
+                    _favoritState.value = addFavorit
+                }
+            }
 
+        }
 
     }
 

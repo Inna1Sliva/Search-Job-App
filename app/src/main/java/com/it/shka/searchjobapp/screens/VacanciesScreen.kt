@@ -45,6 +45,7 @@ import java.nio.file.WatchEvent
 @Composable
 fun VacanciesScreen(viewModel: DataViewModel, navController: NavController){
     val vacancy = viewModel.vacancyState.collectAsState()
+    val _nVacancy = viewModel.getFirstNItems().collectAsState()
 
     var textWhere = remember { mutableStateOf( "" ) }
     Column(modifier = Modifier
@@ -104,7 +105,7 @@ fun VacanciesScreen(viewModel: DataViewModel, navController: NavController){
         .padding(start = 16.dp, end = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ){
-        Text("145 вакансий",
+        Text("${vacancy.value.size} вакансий",
             fontSize = 14.sp,
             color = Color.White
              )
@@ -117,9 +118,12 @@ Spacer(modifier = Modifier
             fontSize = 14.sp,
             color = Color.Blue)
 
-            Icon(painter = painterResource(R.drawable.sorting), contentDescription = "",
+            Icon(
+
+                painter = painterResource(R.drawable.sorting), contentDescription = "",
                 tint = Color.Blue,
-                modifier = Modifier.size(width = 16.dp, height = 16.dp))
+                modifier = Modifier.size(width = 16.dp, height = 16.dp)
+                    .align(Alignment.CenterVertically))
         }
     }
         LazyColumn(modifier = Modifier
@@ -127,11 +131,8 @@ Spacer(modifier = Modifier
             .fillMaxWidth()){
             items(listOf(vacancy)) { data->
                 data.value.forEach { vacancy->
-                    ItemListVacancy(vacancy, onItemClick = {vacancy->
-                      viewModel.setDetailVacancy(vacancy)
-                        navController.navigate("detaile")
-
-                    })
+                    ItemListVacancy(vacancy, viewModel,
+                        navController)
                 }
 
             }
@@ -230,19 +231,19 @@ fun ItemList(vacancy: List<Vacancy>, vm: DataViewModel){//item: Vacancy
                 Spacer(modifier = Modifier
                     .width(50.dp))
                 //Добавить метод определения
-                if (data.isFavorite==true){
+              //  if (data.isFavorite == true){
                     Icon(modifier = Modifier
                         .size(width =24.dp, height = 24.dp ),
                         painter = painterResource(R.drawable.icon_favorits),
                         tint = colorResource(R.color.Basic_Grey_4),
                         contentDescription = "folover")
-                }else{
+               // }else{
                     Icon(modifier = Modifier
                         .size(width =24.dp, height = 24.dp ),
                         painter = painterResource(R.drawable.favorite),
                         tint = Color.Blue,
                         contentDescription = "folover")
-                }
+               // }
 
 
             }

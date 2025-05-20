@@ -1,5 +1,6 @@
 package com.it.shka.searchjobapp.screens
 
+import android.R.attr.fraction
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
@@ -54,6 +55,7 @@ import com.it.shka.searchjobapp.DataViewModel
 import com.it.shka.searchjobapp.IconId
 import com.it.shka.searchjobapp.MainContent
 import com.it.shka.searchjobapp.R
+import com.it.shka.searchjobapp.dialog.DialogScreen
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -78,6 +80,13 @@ fun MainSearch(viewModel:DataViewModel){
         composable ("detaile"){
             DetailsScreen(viewModel)
             }
+        composable ("dialog"){
+            DialogScreen()
+        }
+        composable ("dialog_two"){
+            DetailsScreen(viewModel)
+        }
+
 
         }
 
@@ -127,17 +136,21 @@ fun SearchScreen(viewModel:DataViewModel, navController: NavController){
                     }
                     BasicTextField(
                         modifier = Modifier
-                            .wrapContentSize()
                             .align(Alignment.CenterVertically)
-                            .width(280.dp),
+                            .wrapContentSize(),
                         value = "textWhere.value",
                         onValueChange = {//textWhere.value = it
                         },
                         decorationBox = {
                             Text(
-                                "Должность, ключевые слова",
+                                modifier = Modifier
+                                    .padding(end =16.dp)
+                                    .align(Alignment.CenterVertically),
+                               text =  "Должность, ключевые слова",
                                 fontSize = 16.sp,
-                                color = colorResource(R.color.search_text)
+                                color = colorResource(R.color.search_text),
+                                overflow = TextOverflow.Ellipsis,
+                                textAlign = TextAlign.Justify
                             )
                         }
                     )
@@ -199,11 +212,7 @@ fun SearchScreen(viewModel:DataViewModel, navController: NavController){
 
             items(listOf(_nVacancy)) { vacancy ->
                 vacancy.value.forEach { vacancy ->
-                    ItemListVacancy(vacancy, onItemClick = {vacancy->
-                        viewModel.setDetailVacancy(vacancy)
-                        navController.navigate("detaile")
-
-                    })
+                    ItemListVacancy(vacancy, viewModel,navController)
                 }
 
             }
@@ -235,12 +244,15 @@ fun getSizeVacancy(vacancy: Int): String{
     }
 }
 @Composable
-fun ItemListVacancy(vacancy: Vacancy, onItemClick: (Vacancy)-> Unit){
+fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: NavController){
     Column(
         modifier = Modifier
             .wrapContentSize()
             .padding(bottom = 16.dp)
-            .clickable{onItemClick(vacancy)}
+            .clickable{
+                viewModel.setDetailVacancy(vacancy)
+                navController.navigate("detaile")
+            }
             .background(
                 color = colorResource(R.color.vacancy_bag),
                 shape = RoundedCornerShape(8.dp)
@@ -357,23 +369,27 @@ fun ItemListVacancy(vacancy: Vacancy, onItemClick: (Vacancy)-> Unit){
                     .width(50.dp)
             )
             //Добавить метод определения
-            if (vacancy.isFavorite == true) {
-                Icon(
-                    modifier = Modifier
-                        .size(width = 24.dp, height = 24.dp),
-                    painter = painterResource(R.drawable.icon_favorits),
-                    tint = colorResource(R.color.Basic_Grey_4),
-                    contentDescription = "folover"
-                )
-            } else {
-                Icon(
-                    modifier = Modifier
-                        .size(width = 24.dp, height = 24.dp),
-                    painter = painterResource(R.drawable.favorite),
-                    tint = colorResource(R.color.Special_Blue),
-                    contentDescription = "folover"
-                )
-            }
+           if (vacancy.lookingNumber?.isEmpty() == true) {
+
+               Icon(
+                   modifier = Modifier
+                       .size(width = 24.dp, height = 24.dp),
+                   painter = painterResource(R.drawable.favorite),
+                   tint = colorResource(R.color.Special_Blue),
+                   contentDescription = "folover"
+               )
+
+
+           } else  {
+
+               Icon(
+                   modifier = Modifier
+                       .size(width = 24.dp, height = 24.dp),
+                   painter = painterResource(R.drawable.icon_favorits),
+                   tint = colorResource(R.color.Basic_Grey_4),
+                   contentDescription = "folover"
+               )
+           }
 
 
         }
@@ -386,7 +402,10 @@ fun ItemListVacancy(vacancy: Vacancy, onItemClick: (Vacancy)-> Unit){
                     color = colorResource(R.color.button_color),
                     shape = RoundedCornerShape(50.dp)
                 ),
-            onClick = {},
+            onClick = {
+
+                navController.navigate("dialog")
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.button_color),
                 contentColor = colorResource(R.color.button_color)
