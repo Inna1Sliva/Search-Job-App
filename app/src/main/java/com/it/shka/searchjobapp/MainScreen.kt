@@ -3,6 +3,8 @@ package com.it.shka.searchjobapp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -58,7 +60,7 @@ fun MainContent(navController: NavHostController,
     Scaffold (
         bottomBar = {
             BottomNavigation(navBottomNavigation)
-          //  BadgedBox() { }
+
         }
     ){innerPadding->
         NavHost (
@@ -70,7 +72,9 @@ fun MainContent(navController: NavHostController,
             composable("Поиск") {
                 MainSearch(dataViewModel)
                 }
-
+            composable ("Избранное"){
+                FavoritesScreen(dataViewModel)
+            }
 
             }
 
@@ -90,22 +94,23 @@ fun BottomNavigation(navController: NavHostController ){
         BottomNavItem(R.drawable.icon_profile, "Профиль"),
     )
     NavigationBar(modifier = Modifier
-        .padding(top = 0.2.dp)
         .background(color = colorResource(R.color.search_bag)),
         containerColor = Color.Black
     ) {
         val currentRoute =currentRoute(navController)
-        bottomNavItems.forEach { item->
-            NavigationBarItem(
+        NavigationBarItem(
                 icon = {
+
                     Icon( modifier = Modifier
-                        .size(width = 24.dp, height = 24.dp),
-                        painter = painterResource(item.icon),
-                        contentDescription = item.title,
+                            .size(width = 24.dp, height = 24.dp),
+                            painter = painterResource(R.drawable.icon_search),
+                            contentDescription = "Поиск",
                         )
+
+
                 },
                 label = {
-                    Text(item.title, fontSize = 10.sp,
+                    Text("Поиск", fontSize = 10.sp,
                         fontFamily = FontFamily(Font(R.font.sf_pro_display_regular, FontWeight.W400)))
                 },
                 colors = NavigationBarItemDefaults.colors(
@@ -114,16 +119,143 @@ fun BottomNavigation(navController: NavHostController ){
                     selectedTextColor = Color.Blue,
                     indicatorColor = Color.Transparent
                 ),
-                selected = currentRoute == item.title,
+                selected = currentRoute == "Поиск",
                 onClick = {
-                    navController.navigate(item.title){
+                    navController.navigate("Поиск"){
                         launchSingleTop = true
                         restoreState= true
                 }
 
                 }
-                )
-        }
+        )
+        NavigationBarItem(
+            icon = {
+                BadgedBox(
+                    badge = {
+                        Badge(containerColor = Color.Red){
+                            Text(text = "1",
+                                color = Color.White)
+                }}) {
+
+                    Icon( modifier = Modifier
+                        .size(width = 24.dp, height = 24.dp),
+                        painter = painterResource(R.drawable.icon_favorits),
+                        contentDescription = "Избранное",
+                    )
+                }
+
+            },
+            label = {
+                Text("Избранное", fontSize = 10.sp,
+                    fontFamily = FontFamily(Font(R.font.sf_pro_display_regular, FontWeight.W400)))
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Color.Blue,
+                unselectedIconColor = Color.Gray,
+                selectedTextColor = Color.Blue,
+                indicatorColor = Color.Transparent
+            ),
+            selected = currentRoute == "Избранное",
+            onClick = {
+                navController.navigate("Избранное"){
+                    launchSingleTop = true
+                    restoreState= true
+                }
+
+            }
+        )
+        NavigationBarItem(
+            icon = {
+
+                Icon( modifier = Modifier
+                        .size(width = 24.dp, height = 24.dp),
+                        painter = painterResource(R.drawable.icon_response),
+                        contentDescription = "Отклики",
+                    )
+
+
+            },
+            label = {
+                Text("Отклики", fontSize = 10.sp,
+                    fontFamily = FontFamily(Font(R.font.sf_pro_display_regular, FontWeight.W400)))
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Color.Blue,
+                unselectedIconColor = Color.Gray,
+                selectedTextColor = Color.Blue,
+                indicatorColor = Color.Transparent
+            ),
+            selected = currentRoute == "Отклики",
+            onClick = {
+                navController.navigate("Отклики"){
+                    launchSingleTop = true
+                    restoreState= true
+                }
+
+            }
+        )
+        NavigationBarItem(
+            icon = {
+
+                Icon( modifier = Modifier
+                        .size(width = 24.dp, height = 24.dp),
+                        painter = painterResource(R.drawable.icon_message),
+                        contentDescription = "Сообщение",
+                    )
+
+
+            },
+            label = {
+                Text("Сообщение", fontSize = 10.sp,
+                    fontFamily = FontFamily(Font(R.font.sf_pro_display_regular, FontWeight.W400)))
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Color.Blue,
+                unselectedIconColor = Color.Gray,
+                selectedTextColor = Color.Blue,
+                indicatorColor = Color.Transparent
+            ),
+            selected = currentRoute == "Сообщение",
+            onClick = {
+                navController.navigate("Сообщение"){
+                    launchSingleTop = true
+                    restoreState= true
+                }
+
+            }
+        )
+        NavigationBarItem(
+            icon = {
+
+                Icon( modifier = Modifier
+                        .size(width = 24.dp, height = 24.dp),
+                        painter = painterResource(R.drawable.icon_profile),
+                        contentDescription = "Профиль",
+                    )
+
+
+            },
+            label = {
+                Text("Профиль", fontSize = 10.sp,
+                    fontFamily = FontFamily(Font(R.font.sf_pro_display_regular, FontWeight.W400)))
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = Color.Blue,
+                unselectedIconColor = Color.Gray,
+                selectedTextColor = Color.Blue,
+                indicatorColor = Color.Transparent
+            ),
+            selected = currentRoute == "Профиль",
+            onClick = {
+                navController.navigate("Профиль"){
+                    launchSingleTop = true
+                    restoreState= true
+                }
+
+            }
+        )
+
+
 
     }
 
