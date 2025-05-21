@@ -1,14 +1,9 @@
 package com.it.shka.searchjobapp.screens
 
-import android.R.attr.fraction
-import android.util.Log
+
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,9 +30,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -48,23 +48,29 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import com.it.shka.data.model.Offer
 import com.it.shka.data.model.Vacancy
 import com.it.shka.searchjobapp.DataViewModel
 import com.it.shka.searchjobapp.IconId
-import com.it.shka.searchjobapp.MainContent
 import com.it.shka.searchjobapp.R
+import com.it.shka.searchjobapp.currentRoute
 import com.it.shka.searchjobapp.dialog.DialogScreen
+import com.it.shka.searchjobapp.dialog.DialogTwoScreen
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-//
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainSearch(viewModel:DataViewModel){
-   // val vacancy = viewModel.vacancyState.collectAsState()
+    var showDialog  =viewModel.stateDialog.collectAsState()
+    var showTwoDialog by remember { mutableStateOf(false) }
+
+    // val vacancy = viewModel.vacancyState.collectAsState()
 
     val navController  = rememberNavController()
     NavHost(
@@ -78,19 +84,21 @@ fun MainSearch(viewModel:DataViewModel){
             VacanciesScreen(viewModel, navController)
         }
         composable ("detaile"){
-            DetailsScreen(viewModel)
+           DetailsScreen(viewModel)
             }
-        composable ("dialog"){
-            DialogScreen()
-        }
-        composable ("dialog_two"){
-            DetailsScreen(viewModel)
+       dialog ("dialog") {
+            DialogScreen(navController,viewModel)
+       }
+
+        dialog ("dialog_two"){
+            DialogTwoScreen(navController, viewModel)
         }
 
 
         }
 
 }
+
 
 
 @Composable
@@ -187,7 +195,7 @@ fun SearchScreen(viewModel:DataViewModel, navController: NavController){
         ) {
             items(listOf(offer)) { data ->
                 data.value.forEach { offer->
-                    ItemListOffer(offer)
+                    ItemListOffer(offer, viewModel)
                 }//items
 
             }
@@ -244,12 +252,19 @@ fun getSizeVacancy(vacancy: Int): String{
     }
 }
 @Composable
-fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: NavController){
+fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: NavController) {
+    var showDialog = viewModel.stateDialog.collectAsState()
+    var showTwoDialog by remember { mutableStateOf(false) }
+
+    Box (
+    modifier = Modifier
+        .fillMaxSize()
+){
     Column(
         modifier = Modifier
             .wrapContentSize()
             .padding(bottom = 16.dp)
-            .clickable{
+            .clickable {
                 viewModel.setDetailVacancy(vacancy)
                 navController.navigate("detaile")
             }
@@ -369,27 +384,30 @@ fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: N
                     .width(50.dp)
             )
             //Добавить метод определения
-           if (vacancy.lookingNumber?.isEmpty() == true) {
+            if (vacancy.favorite?.isNotEmpty() == true) {
 
-               Icon(
-                   modifier = Modifier
-                       .size(width = 24.dp, height = 24.dp),
-                   painter = painterResource(R.drawable.favorite),
-                   tint = colorResource(R.color.Special_Blue),
-                   contentDescription = "folover"
-               )
+                Icon(
+                    modifier = Modifier
+                        .size(width = 24.dp, height = 24.dp),
+                    painter = painterResource(R.drawable.favorite),
+                    tint = colorResource(R.color.Special_Blue),
+                    contentDescription = "folover"
+                )
 
 
-           } else  {
+            } else {
 
-               Icon(
-                   modifier = Modifier
-                       .size(width = 24.dp, height = 24.dp),
-                   painter = painterResource(R.drawable.icon_favorits),
-                   tint = colorResource(R.color.Basic_Grey_4),
-                   contentDescription = "folover"
-               )
-           }
+                Icon(
+                    modifier = Modifier
+                        .clickable{
+                            viewModel.setIsFavorit(vacancy.id)
+                        }
+                        .size(width = 24.dp, height = 24.dp),
+                    painter = painterResource(R.drawable.icon_favorits),
+                    tint = colorResource(R.color.Basic_Grey_4),
+                    contentDescription = "folover"
+                )
+            }
 
 
         }
@@ -403,8 +421,10 @@ fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: N
                     shape = RoundedCornerShape(50.dp)
                 ),
             onClick = {
+                viewModel.openDialog()
+               navController.navigate("dialog")
 
-                navController.navigate("dialog")
+
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.button_color),
@@ -417,14 +437,26 @@ fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: N
                 fontSize = 14.sp
             )
         }
+       // if (showDialog.value){
+          //  DialogScreen( onDismiss =  {viewModel.closeDialog()
+              //  navController.currentBackStackEntryAsState()
+           // })
+      //  }
+
+      //  DialogTwoScreen(showDialog = showTwoDialog, onDismiss = { showDialog = false})
     }
 }
+}
 @Composable
-fun ItemListOffer(data: Offer){
+fun ItemListOffer(data: Offer, viewModel: DataViewModel){
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .size(width = 150.dp, height = 132.dp)
             .padding(end = 10.dp)
+            .clickable{
+                viewModel.openLinkOffer(context, data.link)
+            }
             .background(
                 color = colorResource(R.color.vacancy_bag),
                 shape = RoundedCornerShape(8.dp)

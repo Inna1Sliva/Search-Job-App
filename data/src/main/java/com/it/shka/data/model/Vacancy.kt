@@ -8,7 +8,7 @@ data class Vacancy(
     val fullP: String="",
     val house: String="",
     val id: String="",
-    val isFavorite: String = "",
+    val favorite: String?= "",
     val short:String="",
     val lookingNumber: String?="",
     val previewText: String="",

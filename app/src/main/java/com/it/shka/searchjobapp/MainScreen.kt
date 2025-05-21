@@ -12,7 +12,9 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -28,9 +30,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.it.shka.searchjobapp.model.BottomNavItem
+import com.it.shka.searchjobapp.screens.FavoritesScreen
 import com.it.shka.searchjobapp.screens.MainSearch
-import com.it.shka.searchjobapp.screens.VacanciesScreen
-
 
 
 @Composable
@@ -59,7 +60,7 @@ fun MainContent(navController: NavHostController,
     val navBottomNavigation  = rememberNavController()
     Scaffold (
         bottomBar = {
-            BottomNavigation(navBottomNavigation)
+            BottomNavigation(navBottomNavigation, dataViewModel)
 
         }
     ){innerPadding->
@@ -85,14 +86,9 @@ fun MainContent(navController: NavHostController,
 
 
 @Composable
-fun BottomNavigation(navController: NavHostController ){
-    var bottomNavItems = listOf(
-        BottomNavItem(R.drawable.icon_search, "Поиск"),
-        BottomNavItem(R.drawable.icon_favorits, "Избранное"),
-        BottomNavItem(R.drawable.icon_response, "Отклики"),
-        BottomNavItem(R.drawable.icon_message, "Сообщение"),
-        BottomNavItem(R.drawable.icon_profile, "Профиль"),
-    )
+fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel ){
+    val favorits = viewModel.favoritsState.collectAsState()
+    val fav = viewModel.vacancyLive.observeAsState()
     NavigationBar(modifier = Modifier
         .background(color = colorResource(R.color.search_bag)),
         containerColor = Color.Black
@@ -133,7 +129,7 @@ fun BottomNavigation(navController: NavHostController ){
                 BadgedBox(
                     badge = {
                         Badge(containerColor = Color.Red){
-                            Text(text = "1",
+                            Text(text = fav.value?.size.toString(),
                                 color = Color.White)
                 }}) {
 
