@@ -1,4 +1,4 @@
-package com.it.shka.searchjobapp
+package com.it.shka.searchjobapp.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +33,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.it.shka.data.model.Vacancy
-import com.it.shka.searchjobapp.screens.getMonthString
+import com.it.shka.searchjobapp.DataViewModel
+import com.it.shka.searchjobapp.R
 
 @Composable
 fun FavoritesScreen(viewModel: DataViewModel){
@@ -200,7 +201,7 @@ fun ItemFavorit(vacancy: Vacancy){
                     .width(50.dp)
             )
             //Добавить метод определения
-            if (vacancy.lookingNumber?.isEmpty() == true) {
+            if (vacancy.favorite?.isNotEmpty() == true) {
 
                 Icon(
                     modifier = Modifier

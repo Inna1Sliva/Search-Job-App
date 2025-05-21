@@ -1,7 +1,10 @@
 package com.it.shka.searchjobapp
 
 
-import androidx.compose.runtime.mutableStateOf
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.it.shka.data.ImplDataRepository
@@ -9,12 +12,16 @@ import com.it.shka.data.model.Offer
 import com.it.shka.data.model.Vacancy
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 
 
 class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel() {
+    val stateDialog = MutableStateFlow(false)
+    val stateDialogTwo = MutableStateFlow(false)
+
+    private   val _vacancyLive = MutableLiveData<List<Vacancy>>(emptyList())
+  val vacancyLive : MutableLiveData<List<Vacancy>> = _vacancyLive
+
     private val _vacancyDetail = MutableStateFlow<List<Vacancy>>(emptyList())
     val vacancyDetail: StateFlow<List<Vacancy>> get() = _vacancyDetail
 
@@ -33,6 +40,15 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
             dataRepository.getVacancy()
        }
         getFavoritVacancy()
+    }
+    fun setIsFavorit(vacacyId: String){
+        viewModelScope.launch {
+            try {
+                dataRepository.setIsFavorit(vacacyId)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
     }
     fun getFirstNItems(): StateFlow<List<Vacancy>>{
          val _nState = MutableStateFlow<List<Vacancy>>(emptyList())
@@ -61,10 +77,11 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
         viewModelScope.launch {
             vacancyState.collect { vacancy->
                 val addFavorit = mutableListOf<Vacancy>()
-                for (favorit in  vacancy){
-                    if (favorit.lookingNumber?.isEmpty()==true){
-                        addFavorit.add(favorit)
+                for (isFavorit in  vacancy){
+                    if (isFavorit.favorite?.isNotEmpty()==true){
+                        addFavorit.add(isFavorit)
                     }
+                    _vacancyLive.postValue(addFavorit)
                     _favoritState.value = addFavorit
                 }
             }
@@ -72,6 +89,33 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
         }
 
     }
+    fun openLinkOffer(context: Context, url: String){
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url) )
+        if (intent.resolveActivity(context.packageManager) != null){
+            context.startActivity(intent)
+        }
+    }
+    fun openDialog(){
+        viewModelScope.launch {
+            stateDialog.value = true
+        }
+    }
+    fun openDialogTwo(){
+        viewModelScope.launch {
+            stateDialogTwo.value = true
+        }
+    }
+    fun closeDialog(){
+        viewModelScope.launch {
+           stateDialog.value = false
+        }
+    }
+    fun closeDialogTwo(){
+        viewModelScope.launch {
+            stateDialogTwo.value = false
+        }
+    }
+
 
 
 }
