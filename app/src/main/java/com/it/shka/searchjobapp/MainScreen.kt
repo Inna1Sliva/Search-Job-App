@@ -12,9 +12,12 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -32,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.it.shka.searchjobapp.model.BottomNavItem
 import com.it.shka.searchjobapp.screens.FavoritesScreen
 import com.it.shka.searchjobapp.screens.MainSearch
+import com.it.shka.searchjobapp.screens.SignUpScreen
 
 
 @Composable
@@ -39,14 +43,14 @@ fun MainScreen(dataViewModel: DataViewModel){
     val NavHostController  = rememberNavController()
     NavHost(
         navController= NavHostController,
-        startDestination= "main"
+        startDestination= "signup"
     ){
         composable("main"){
             MainContent(NavHostController,dataViewModel)
 
         }
-        composable("vacancies") {
-            //VacanciesScreen(Da)
+        composable("signup") {
+            SignUpScreen()
 
         }
 
@@ -87,8 +91,11 @@ fun MainContent(navController: NavHostController,
 
 @Composable
 fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel ){
-    val favorits = viewModel.favoritsState.collectAsState()
-    val fav = viewModel.vacancyLive.observeAsState()
+    val fav by viewModel.vacancyLive.observeAsState()
+    var bageText: String = remember { mutableStateOf("").toString() }
+
+        bageText =fav.toString()
+
     NavigationBar(modifier = Modifier
         .background(color = colorResource(R.color.search_bag)),
         containerColor = Color.Black
@@ -128,10 +135,13 @@ fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel 
             icon = {
                 BadgedBox(
                     badge = {
+                        if (bageText.toInt() > 0){
                         Badge(containerColor = Color.Red){
-                            Text(text = fav.value?.size.toString(),
-                                color = Color.White)
-                }}) {
+
+                                Text(text = "$bageText",
+                                    color = Color.White)
+                            }
+                        }}) {
 
                     Icon( modifier = Modifier
                         .size(width = 24.dp, height = 24.dp),

@@ -19,18 +19,24 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
     val stateDialog = MutableStateFlow(false)
     val stateDialogTwo = MutableStateFlow(false)
 
-    private   val _vacancyLive = MutableLiveData<List<Vacancy>>(emptyList())
-  val vacancyLive : MutableLiveData<List<Vacancy>> = _vacancyLive
+    private   val _vacancyLive = MutableLiveData<Int>(0)
+  val vacancyLive : MutableLiveData<Int> = _vacancyLive
 
     private val _vacancyDetail = MutableStateFlow<List<Vacancy>>(emptyList())
     val vacancyDetail: StateFlow<List<Vacancy>> get() = _vacancyDetail
-
+    //dataRepository.favoritsState
     val _favoritState = MutableStateFlow<List<Vacancy>>(emptyList())
 
     val favoritsState: StateFlow<List<Vacancy>>  = _favoritState
+    val favoritCount : StateFlow<Int> = dataRepository.favoritCount
 
     val offerState:StateFlow<List<Offer>> = dataRepository.offerState
-    val vacancyState:StateFlow<List<Vacancy>> = dataRepository.vacancyState
+    //dataRepository.vacancyState
+    val _vacancyState = MutableStateFlow<List<Vacancy>>(emptyList())
+    val vacancyState:StateFlow<List<Vacancy>> = _vacancyState
+
+    private val _nVacancyState = MutableStateFlow<List<Vacancy>>(emptyList())
+    val nVacancyState: StateFlow<List<Vacancy>> = _nVacancyState
 
     init {
         viewModelScope.launch {
@@ -39,32 +45,44 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
        viewModelScope.launch {
             dataRepository.getVacancy()
        }
-        getFavoritVacancy()
+        viewModelScope.launch {
+            dataRepository.getVacancyF().collect {vacancy->
+                _vacancyState.value = vacancy
+                val addFavorit = mutableListOf<Vacancy>()
+                for (f in vacancy ) {
+                    if (f.favorite?.isNotEmpty() == true) {
+                        addFavorit.add(f)
+                    }
+                    _vacancyLive.postValue(addFavorit.size)
+                    _favoritState.value = addFavorit
+                }
+            }
+
+        }
+        viewModelScope.launch {
+            dataRepository.updateNVacancy().collect {vacancy->
+                val firstThree = mutableListOf<Vacancy>()
+                for (i in vacancy.indices){
+                    if (i >= 3 ) break
+                    firstThree.add(vacancy[i])
+                }
+                _nVacancyState.value = firstThree
+            }
+
+        }
+
     }
     fun setIsFavorit(vacacyId: String){
         viewModelScope.launch {
             try {
                 dataRepository.setIsFavorit(vacacyId)
+
             }catch (e: Exception){
                 e.printStackTrace()
             }
         }
     }
-    fun getFirstNItems(): StateFlow<List<Vacancy>>{
-         val _nState = MutableStateFlow<List<Vacancy>>(emptyList())
-        viewModelScope.launch {
-            val firstThree = mutableListOf<Vacancy>()
-            vacancyState.collect { list->
-                for (i in list.indices){
-                    if (i >= 3 ) break
-                    firstThree.add(list[i])
-                }
-                _nState.value = firstThree
-            }
 
-        }
-        return _nState
-    }
     fun setDetailVacancy(vacancy: Vacancy){
      //   val _vacancyState = MutableStateFlow<List<Vacancy>>(emptyList())
         viewModelScope.launch {
@@ -73,22 +91,7 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
             _vacancyDetail.value = firstThree
         }
     }
-    fun getFavoritVacancy(){
-        viewModelScope.launch {
-            vacancyState.collect { vacancy->
-                val addFavorit = mutableListOf<Vacancy>()
-                for (isFavorit in  vacancy){
-                    if (isFavorit.favorite?.isNotEmpty()==true){
-                        addFavorit.add(isFavorit)
-                    }
-                    _vacancyLive.postValue(addFavorit)
-                    _favoritState.value = addFavorit
-                }
-            }
 
-        }
-
-    }
     fun openLinkOffer(context: Context, url: String){
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url) )
         if (intent.resolveActivity(context.packageManager) != null){

@@ -45,7 +45,7 @@ import java.nio.file.WatchEvent
 @Composable
 fun VacanciesScreen(viewModel: DataViewModel, navController: NavController){
     val vacancy = viewModel.vacancyState.collectAsState()
-    val _nVacancy = viewModel.getFirstNItems().collectAsState()
+    val _nVacancy = viewModel.nVacancyState.collectAsState()
 
     var textWhere = remember { mutableStateOf( "" ) }
     Column(modifier = Modifier
