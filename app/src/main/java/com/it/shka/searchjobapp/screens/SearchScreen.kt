@@ -105,7 +105,7 @@ fun MainSearch(viewModel:DataViewModel){
 fun SearchScreen(viewModel:DataViewModel, navController: NavController){
     val scrollState =rememberScrollState()
     val offer = viewModel.offerState.collectAsState()
-    val _nVacancy = viewModel.getFirstNItems().collectAsState()
+    val _nVacancy = viewModel.nVacancyState.collectAsState()
     val vacancy = viewModel.vacancyState.collectAsState()
     //  val offer = viewModel.offerState.collectAsState(emptyList())
 
@@ -253,13 +253,8 @@ fun getSizeVacancy(vacancy: Int): String{
 }
 @Composable
 fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: NavController) {
-    var showDialog = viewModel.stateDialog.collectAsState()
-    var showTwoDialog by remember { mutableStateOf(false) }
 
-    Box (
-    modifier = Modifier
-        .fillMaxSize()
-){
+
     Column(
         modifier = Modifier
             .wrapContentSize()
@@ -399,7 +394,7 @@ fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: N
 
                 Icon(
                     modifier = Modifier
-                        .clickable{
+                        .clickable {
                             viewModel.setIsFavorit(vacancy.id)
                         }
                         .size(width = 24.dp, height = 24.dp),
@@ -422,7 +417,7 @@ fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: N
                 ),
             onClick = {
                 viewModel.openDialog()
-               navController.navigate("dialog")
+                navController.navigate("dialog")
 
 
             },
@@ -437,15 +432,8 @@ fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: N
                 fontSize = 14.sp
             )
         }
-       // if (showDialog.value){
-          //  DialogScreen( onDismiss =  {viewModel.closeDialog()
-              //  navController.currentBackStackEntryAsState()
-           // })
-      //  }
-
-      //  DialogTwoScreen(showDialog = showTwoDialog, onDismiss = { showDialog = false})
     }
-}
+
 }
 @Composable
 fun ItemListOffer(data: Offer, viewModel: DataViewModel){
