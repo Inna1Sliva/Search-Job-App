@@ -8,5 +8,6 @@ import org.koin.dsl.module
 
 val ViewModelModule = module {
     single<DataRepository>{ ImplDataRepository(get()) }
+
     viewModel{ DataViewModel(get()) }
 }
