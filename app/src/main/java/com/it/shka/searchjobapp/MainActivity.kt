@@ -25,6 +25,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
     private val vm: DataViewModel by viewModel<DataViewModel>()
+    private val AuthVm: UserAuthViewModel by viewModel<UserAuthViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SearchJobAppTheme {
 
-                MainScreen(vm)
+                MainScreen(vm , AuthVm)
             }
         }
     }

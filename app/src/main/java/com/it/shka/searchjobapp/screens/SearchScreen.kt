@@ -67,10 +67,7 @@ import java.util.Locale
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainSearch(viewModel:DataViewModel){
-    var showDialog  =viewModel.stateDialog.collectAsState()
-    var showTwoDialog by remember { mutableStateOf(false) }
 
-    // val vacancy = viewModel.vacancyState.collectAsState()
 
     val navController  = rememberNavController()
     NavHost(

@@ -35,22 +35,27 @@ import androidx.navigation.compose.rememberNavController
 import com.it.shka.searchjobapp.model.BottomNavItem
 import com.it.shka.searchjobapp.screens.FavoritesScreen
 import com.it.shka.searchjobapp.screens.MainSearch
-import com.it.shka.searchjobapp.screens.SignUpScreen
+import com.it.shka.searchjobapp.screens.SignInAuthScreen
+import com.it.shka.searchjobapp.screens.SignUpAuthScreen
 
 
 @Composable
-fun MainScreen(dataViewModel: DataViewModel){
+fun MainScreen(dataViewModel: DataViewModel, authViewModel: UserAuthViewModel){
     val NavHostController  = rememberNavController()
     NavHost(
         navController= NavHostController,
-        startDestination= "signup"
+        startDestination= "signUp"
     ){
         composable("main"){
-            MainContent(NavHostController,dataViewModel)
+            MainContent(dataViewModel)
 
         }
-        composable("signup") {
-            SignUpScreen()
+        composable("signIn") {
+            SignInAuthScreen(NavHostController, authViewModel)
+
+        }
+        composable("signUp") {
+            SignUpAuthScreen()
 
         }
 
@@ -59,8 +64,7 @@ fun MainScreen(dataViewModel: DataViewModel){
 
 }
 @Composable
-fun MainContent(navController: NavHostController,
-                dataViewModel: DataViewModel){
+fun MainContent(dataViewModel: DataViewModel){
     val navBottomNavigation  = rememberNavController()
     Scaffold (
         bottomBar = {
