@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +43,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.it.shka.searchjobapp.R
+import com.it.shka.searchjobapp.viewmodel.UserAuthViewModel
 import kotlin.text.isEmpty
 
 @Composable
-fun SignUpAuthScreen(){
+fun SignUpAuthScreen(authViewModel: UserAuthViewModel, navController: NavController){
     val otpVal = remember { mutableStateOf("") }
+    val email = authViewModel.emailState.collectAsState()
+    val code = authViewModel.codeState.collectAsState()
+
 
     Box(
         modifier = Modifier
@@ -59,7 +65,7 @@ fun SignUpAuthScreen(){
             .padding(top = 162.dp, start = 16.dp, end = 16.dp)) {
             Text(
 
-                text = "Отправили код на example@mail.ru",
+                text = "Отправили код на ${email.value}",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontFamily = FontFamily(Font(R.font.sf_pro_display_regular, FontWeight.W600))
@@ -73,8 +79,9 @@ fun SignUpAuthScreen(){
                 fontFamily = FontFamily(Font(R.font.sf_pro_display_regular, FontWeight.W600))
             )
 
-            OTPTextFields(onFilled ={
-                otpVal.value = it.toString()
+            OTPTextFields(onFilled ={otpString->
+
+                otpVal.value = otpString
             } )
             Button(
                 modifier = Modifier
@@ -82,6 +89,13 @@ fun SignUpAuthScreen(){
                     .padding(top = 16.dp)
                     .background(color = colorResource(R.color.Special_Dark_blue), shape = RoundedCornerShape(8.dp)),
                 onClick = {
+
+                        Log.d("Code", "Отлично${otpVal}")
+                        if (otpVal.value == code.value){
+
+                            navController.navigate("main")
+                        }
+
 
 
                 },
@@ -111,6 +125,7 @@ fun OTPTextFields(
 
     onFilled:(code:String)-> Unit
 ){
+    val codeDigits = remember { List(4) { mutableStateOf("") } }
     val otpLength:Int = 4
     var otpValues =remember { mutableStateListOf(*Array(otpLength){""}) }
     val focusRequester= List(otpLength){ FocusRequester() }
@@ -149,10 +164,8 @@ fun OTPTextFields(
                                 focusRequester[index + 1].requestFocus()
                             } else {
                                 keyboardController?.hide()
-                                otpValues.joinToString(separator = ""){
-                                    onFilled(it.toString()).toString()
-                                }
-
+                                val otpString= otpValues.joinToString(separator = "")
+                                onFilled(otpString)
                             }
                         }
                     } else {

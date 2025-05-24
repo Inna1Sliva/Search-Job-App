@@ -1,7 +1,6 @@
-package com.it.shka.searchjobapp
+package com.it.shka.searchjobapp.navigation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -9,11 +8,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -28,73 +24,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.it.shka.searchjobapp.model.BottomNavItem
-import com.it.shka.searchjobapp.screens.FavoritesScreen
-import com.it.shka.searchjobapp.screens.MainSearch
-import com.it.shka.searchjobapp.screens.SignInAuthScreen
-import com.it.shka.searchjobapp.screens.SignUpAuthScreen
-
+import com.it.shka.searchjobapp.viewmodel.DataViewModel
+import com.it.shka.searchjobapp.R
+import com.it.shka.searchjobapp.rout.RouteMainContent
 
 @Composable
-fun MainScreen(dataViewModel: DataViewModel, authViewModel: UserAuthViewModel){
-    val NavHostController  = rememberNavController()
-    NavHost(
-        navController= NavHostController,
-        startDestination= "signUp"
-    ){
-        composable("main"){
-            MainContent(dataViewModel)
-
-        }
-        composable("signIn") {
-            SignInAuthScreen(NavHostController, authViewModel)
-
-        }
-        composable("signUp") {
-            SignUpAuthScreen()
-
-        }
-
-    }
-
-
-}
-@Composable
-fun MainContent(dataViewModel: DataViewModel){
-    val navBottomNavigation  = rememberNavController()
-    Scaffold (
-        bottomBar = {
-            BottomNavigation(navBottomNavigation, dataViewModel)
-
-        }
-    ){innerPadding->
-        NavHost (
-            navController= navBottomNavigation,
-            startDestination = "Поиск",
-            Modifier.padding(innerPadding)
-        ){
-
-            composable("Поиск") {
-                MainSearch(dataViewModel)
-                }
-            composable ("Избранное"){
-                FavoritesScreen(dataViewModel)
-            }
-
-            }
-
-        }
-
-    }
-
-
-
-@Composable
-fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel ){
+fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel){
     val fav by viewModel.vacancyLive.observeAsState()
     var bageText: String = remember { mutableStateOf("").toString() }
 
@@ -126,9 +62,9 @@ fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel 
                     selectedTextColor = Color.Blue,
                     indicatorColor = Color.Transparent
                 ),
-                selected = currentRoute == "Поиск",
+                selected = currentRoute == RouteMainContent.MainSearch.route,
                 onClick = {
-                    navController.navigate("Поиск"){
+                    navController.navigate(RouteMainContent.MainSearch.route){
                         launchSingleTop = true
                         restoreState= true
                 }
@@ -165,9 +101,9 @@ fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel 
                 selectedTextColor = Color.Blue,
                 indicatorColor = Color.Transparent
             ),
-            selected = currentRoute == "Избранное",
+            selected = currentRoute == RouteMainContent.FavoritesScreen.route,
             onClick = {
-                navController.navigate("Избранное"){
+                navController.navigate(RouteMainContent.FavoritesScreen.route){
                     launchSingleTop = true
                     restoreState= true
                 }

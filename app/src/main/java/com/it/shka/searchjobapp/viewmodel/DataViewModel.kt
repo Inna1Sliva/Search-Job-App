@@ -1,4 +1,4 @@
-package com.it.shka.searchjobapp
+package com.it.shka.searchjobapp.viewmodel
 
 
 import android.content.Context
@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 
 
 class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel() {
+    val stateDialog = MutableStateFlow(false)
+    val stateDialogTwo = MutableStateFlow(false)
 
     private   val _vacancyLive = MutableLiveData<Int>(0)
   val vacancyLive : MutableLiveData<Int> = _vacancyLive
@@ -96,7 +98,26 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
             context.startActivity(intent)
         }
     }
-
+    fun openDialog(){
+        viewModelScope.launch {
+            stateDialog.value = true
+        }
+    }
+    fun openDialogTwo(){
+        viewModelScope.launch {
+            stateDialogTwo.value = true
+        }
+    }
+    fun closeDialog(){
+        viewModelScope.launch {
+           stateDialog.value = false
+        }
+    }
+    fun closeDialogTwo(){
+        viewModelScope.launch {
+            stateDialogTwo.value = false
+        }
+    }
 
 
 
