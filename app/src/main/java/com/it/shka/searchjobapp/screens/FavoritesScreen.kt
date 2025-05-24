@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.it.shka.data.model.Vacancy
-import com.it.shka.searchjobapp.DataViewModel
+import com.it.shka.searchjobapp.viewmodel.DataViewModel
 import com.it.shka.searchjobapp.R
 
 @Composable
