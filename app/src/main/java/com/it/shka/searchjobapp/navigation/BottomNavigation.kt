@@ -131,9 +131,9 @@ fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel)
                 selectedTextColor = Color.Blue,
                 indicatorColor = Color.Transparent
             ),
-            selected = currentRoute == "Отклики",
+            selected = currentRoute == RouteMainContent.ResponseScreen.route,
             onClick = {
-                navController.navigate("Отклики"){
+                navController.navigate(RouteMainContent.ResponseScreen.route){
                     launchSingleTop = true
                     restoreState= true
                 }
@@ -161,9 +161,9 @@ fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel)
                 selectedTextColor = Color.Blue,
                 indicatorColor = Color.Transparent
             ),
-            selected = currentRoute == "Сообщение",
+            selected = currentRoute == RouteMainContent.MessageScreens.route,
             onClick = {
-                navController.navigate("Сообщение"){
+                navController.navigate(RouteMainContent.MessageScreens.route){
                     launchSingleTop = true
                     restoreState= true
                 }
@@ -191,9 +191,9 @@ fun BottomNavigation(navController: NavHostController, viewModel: DataViewModel)
                 selectedTextColor = Color.Blue,
                 indicatorColor = Color.Transparent
             ),
-            selected = currentRoute == "Профиль",
+            selected = currentRoute == RouteMainContent.ProfileScreen.route,
             onClick = {
-                navController.navigate("Профиль"){
+                navController.navigate(RouteMainContent.ProfileScreen.route){
                     launchSingleTop = true
                     restoreState= true
                 }

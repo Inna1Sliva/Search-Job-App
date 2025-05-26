@@ -43,7 +43,7 @@ import com.it.shka.searchjobapp.viewmodel.DataViewModel
 fun DetailsScreen(viewModel: DataViewModel, navController: NavController){
     val vacancy = viewModel.vacancyDetail.collectAsState()
     val statScroll = rememberScrollState()
-
+    vacancy.value.forEach { vacancy->
     Column(modifier = Modifier
         .fillMaxSize()
         .background(color = Color.Black)
@@ -85,15 +85,29 @@ fun DetailsScreen(viewModel: DataViewModel, navController: NavController){
                 tint = Color.White
             )
             //icon favorit
-            Icon(
-                modifier = Modifier
-                    .size(width = 28.dp, height = 28.dp),
-                painter = painterResource(R.drawable.icon_favorits),
-                contentDescription = null,
-                tint = Color.White
-            )
+            if (vacancy.favorite?.isNotEmpty()==true){
+                Icon(
+                    modifier = Modifier
+                        .clickable {
+                            viewModel.deletIsFavorit(vacancy.id)
+                        }
+                        .size(width = 28.dp, height = 28.dp),
+                    painter = painterResource(R.drawable.favorite),
+                    tint = colorResource(R.color.Special_Blue),
+                    contentDescription = "folover"
+                )
+            }else{
+                Icon(
+                    modifier = Modifier
+                        .size(width = 28.dp, height = 28.dp),
+                    painter = painterResource(R.drawable.icon_favorits),
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+
         }// end navigation row
-vacancy.value.forEach { vacancy->
+
         Column(
             modifier = Modifier
                 .padding(16.dp)

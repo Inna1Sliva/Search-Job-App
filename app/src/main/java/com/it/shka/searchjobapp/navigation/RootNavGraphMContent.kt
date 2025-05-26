@@ -11,6 +11,9 @@ import com.it.shka.searchjobapp.viewmodel.DataViewModel
 import com.it.shka.searchjobapp.rout.RouteMainContent
 import com.it.shka.searchjobapp.screens.DetailsScreen
 import com.it.shka.searchjobapp.screens.FavoritesScreen
+import com.it.shka.searchjobapp.screens.MessageScreen
+import com.it.shka.searchjobapp.screens.ProfileScreen
+import com.it.shka.searchjobapp.screens.ResponseScreen
 
 
 @Composable
@@ -36,6 +39,15 @@ fun MainContent(dataViewModel: DataViewModel){
             }
             composable (RouteMainContent.DetailsScreen.route){
                 DetailsScreen(dataViewModel,navBottomNavigation)
+            }
+            composable(RouteMainContent.ResponseScreen.route) {
+                ResponseScreen()
+            }
+            composable(RouteMainContent.MessageScreens.route) {
+                MessageScreen()
+            }
+            composable(RouteMainContent.ProfileScreen.route) {
+                ProfileScreen()
             }
 
         }
