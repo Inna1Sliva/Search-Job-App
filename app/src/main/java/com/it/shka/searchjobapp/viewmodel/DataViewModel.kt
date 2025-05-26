@@ -72,6 +72,15 @@ class DataViewModel(private val dataRepository: ImplDataRepository): ViewModel()
         }
 
     }
+    fun deletIsFavorit(vacacyId: String){
+        viewModelScope.launch {
+            try {
+                dataRepository.deletIsFavorit(vacacyId)
+            } catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+    }
     fun setIsFavorit(vacacyId: String){
         viewModelScope.launch {
             try {

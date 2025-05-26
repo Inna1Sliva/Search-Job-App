@@ -21,6 +21,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,13 +34,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.it.shka.data.model.Vacancy
 import com.it.shka.searchjobapp.viewmodel.DataViewModel
 import com.it.shka.searchjobapp.R
+import com.it.shka.searchjobapp.rout.RouteMainContent
 
 @Composable
-fun FavoritesScreen(viewModel: DataViewModel){
+fun FavoritesScreen(viewModel: DataViewModel, navController: NavController){
+   // var coutVacancy: String = remember { mutableStateOf("").toString() }
+
     val favorits = viewModel.favoritsState.collectAsState()
+    val coutState by viewModel.vacancyLive.observeAsState()
+
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -56,7 +64,7 @@ fun FavoritesScreen(viewModel: DataViewModel){
         Text(
             modifier = Modifier
                 .padding(16.dp),
-            text = "1 вакансия",
+            text = getCoutVacancy(coutState?.toInt()),/// метод
             fontSize = 14.sp,
             color = colorResource(R.color.Basic_Grey_3),
             fontFamily = FontFamily(Font(R.font.sf_pro_display_regular, FontWeight.W400))
@@ -67,7 +75,7 @@ fun FavoritesScreen(viewModel: DataViewModel){
         ) {
            items (listOf(favorits)){ list->
                list.value.forEach {vacancy->
-                   ItemFavorit(vacancy)
+                   ItemFavorit(vacancy, viewModel, navController)
 
                }
 
@@ -79,12 +87,16 @@ fun FavoritesScreen(viewModel: DataViewModel){
     }
 }
 @Composable
-fun ItemFavorit(vacancy: Vacancy){
+fun ItemFavorit(vacancy: Vacancy, viewModel: DataViewModel, navController: NavController){
     Column(
         modifier = Modifier
             .wrapContentSize()
             .padding(bottom = 16.dp)
-            .clickable{}//onItemClick(vacancy)
+            .clickable{
+              viewModel.setDetailVacancy(vacancy)
+                navController.navigate(RouteMainContent.DetailsScreen.route)
+
+            }//onItemClick(vacancy)
             .background(
                 color = colorResource(R.color.vacancy_bag),
                 shape = RoundedCornerShape(8.dp)
@@ -205,6 +217,9 @@ fun ItemFavorit(vacancy: Vacancy){
 
                 Icon(
                     modifier = Modifier
+                        .clickable{
+                            viewModel.deletIsFavorit(vacancy.id)
+                        }
                         .size(width = 24.dp, height = 24.dp),
                     painter = painterResource(R.drawable.favorite),
                     tint = colorResource(R.color.Special_Blue),
@@ -216,6 +231,9 @@ fun ItemFavorit(vacancy: Vacancy){
 
                 Icon(
                     modifier = Modifier
+                        .clickable{
+                            viewModel.setIsFavorit(vacancy.id)
+                        }
                         .size(width = 24.dp, height = 24.dp),
                     painter = painterResource(R.drawable.icon_favorits),
                     tint = colorResource(R.color.Basic_Grey_4),
@@ -246,5 +264,13 @@ fun ItemFavorit(vacancy: Vacancy){
                 fontSize = 14.sp
             )
         }
+    }
+}
+@Composable
+fun getCoutVacancy(vacancy: Int?): String{
+    return when(vacancy){
+        0-> ""
+        1->" 1 вакансия"
+        else -> "$vacancy вакансии"
     }
 }

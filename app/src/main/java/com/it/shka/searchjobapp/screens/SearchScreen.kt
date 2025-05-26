@@ -1,7 +1,6 @@
 package com.it.shka.searchjobapp.screens
 
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,25 +40,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
-import androidx.navigation.compose.rememberNavController
 import com.it.shka.data.model.Offer
 import com.it.shka.data.model.Vacancy
 import com.it.shka.searchjobapp.viewmodel.DataViewModel
 import com.it.shka.searchjobapp.IconId
 import com.it.shka.searchjobapp.R
-import com.it.shka.searchjobapp.dialog.DialogScreen
-import com.it.shka.searchjobapp.dialog.DialogTwoScreen
-import com.it.shka.searchjobapp.rout.RouteMainSearch
 import java.text.SimpleDateFormat
 import java.util.Locale
-
-
-
-
-
 
 
 @Composable
@@ -68,7 +55,6 @@ fun SearchScreen(viewModel:DataViewModel, navController: NavController){
     val offer = viewModel.offerState.collectAsState()
     val _nVacancy = viewModel.nVacancyState.collectAsState()
     val vacancy = viewModel.vacancyState.collectAsState()
-    //  val offer = viewModel.offerState.collectAsState(emptyList())
 
 
     Column(modifier = Modifier
@@ -344,6 +330,9 @@ fun ItemListVacancy(vacancy: Vacancy, viewModel: DataViewModel, navController: N
 
                 Icon(
                     modifier = Modifier
+                       .clickable {
+                           viewModel.deletIsFavorit(vacancy.id)
+                       }
                         .size(width = 24.dp, height = 24.dp),
                     painter = painterResource(R.drawable.favorite),
                     tint = colorResource(R.color.Special_Blue),

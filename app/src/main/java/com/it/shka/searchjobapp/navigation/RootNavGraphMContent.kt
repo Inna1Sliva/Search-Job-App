@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.it.shka.searchjobapp.viewmodel.DataViewModel
 import com.it.shka.searchjobapp.rout.RouteMainContent
+import com.it.shka.searchjobapp.screens.DetailsScreen
 import com.it.shka.searchjobapp.screens.FavoritesScreen
-import com.it.shka.searchjobapp.screens.MainSearch
 
 
 @Composable
@@ -32,7 +32,10 @@ fun MainContent(dataViewModel: DataViewModel){
                 MainSearch(dataViewModel)
             }
             composable (RouteMainContent.FavoritesScreen.route){
-                FavoritesScreen(dataViewModel)
+                FavoritesScreen(dataViewModel, navBottomNavigation)
+            }
+            composable (RouteMainContent.DetailsScreen.route){
+                DetailsScreen(dataViewModel,navBottomNavigation)
             }
 
         }

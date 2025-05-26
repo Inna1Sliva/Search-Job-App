@@ -1,7 +1,7 @@
 package com.it.shka.data
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
+//mport androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -20,7 +20,7 @@ import kotlinx.coroutines.tasks.await
 class ImplDataRepository(private val dataReference: FirebaseDatabase ): DataRepository {
     private val _offerState: MutableStateFlow<List<Offer>> = MutableStateFlow(emptyList())
     val offerState: StateFlow<List<Offer>> get() = _offerState
-    var vacancy = MutableLiveData<List<Vacancy>>()
+   // var vacancy = MutableLiveData<List<Vacancy>>()
     private val _vacancyState: MutableStateFlow<List<Vacancy>> = MutableStateFlow(emptyList())
     val vacancyState: StateFlow<List<Vacancy>> get() = _vacancyState
 
@@ -29,7 +29,7 @@ class ImplDataRepository(private val dataReference: FirebaseDatabase ): DataRepo
     val favoritCount: StateFlow<Int> = MutableStateFlow(0)
 
     init {
-        vacancy = MutableLiveData()
+   //     vacancy = MutableLiveData()
     }
     fun getVacancyF(): Flow<List<Vacancy>> = callbackFlow {
         val listener = object : ValueEventListener{
@@ -82,14 +82,29 @@ class ImplDataRepository(private val dataReference: FirebaseDatabase ): DataRepo
 
                 }
                 _vacancyState.value = vacancyList
-                vacancy.postValue(vacancyList)
+              //  vacancy.postValue(vacancyList)
 
             }
         } catch (e: Exception) {
             _vacancyState.value = emptyList()
-            vacancy.postValue(emptyList())
+           // vacancy.postValue(emptyList())
 
         }
+    }
+
+    override suspend fun deletIsFavorit(vacancyId: String) {
+        val vacancyData = mapOf(
+            "favorite" to ""
+        )
+        dataReference.getReference("vacancies").child(vacancyId).updateChildren(vacancyData)
+            .addOnSuccessListener {
+                updateFavoritCount()
+                updateNVacancy()
+                Log.d("Vacancy", "Успех")
+            }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+            }
     }
 
     override suspend fun setIsFavorit(vacancyId: String) {
@@ -105,7 +120,10 @@ class ImplDataRepository(private val dataReference: FirebaseDatabase ): DataRepo
             .addOnFailureListener { e ->
                 e.printStackTrace()
             }
+
     }
+
+
 
     fun updateFavoritCount():Flow<List<Vacancy>>{
         return getVacancyF()

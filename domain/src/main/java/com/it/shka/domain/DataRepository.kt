@@ -5,6 +5,6 @@ import java.util.concurrent.Flow
 interface DataRepository {
     suspend fun getOffer()
     suspend fun getVacancy()
-   // suspend fun updateFavoritCount()
+    suspend fun deletIsFavorit(vacancyId: String)
     suspend fun setIsFavorit(vacancyId: String)
 }

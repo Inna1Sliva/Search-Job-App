@@ -1,6 +1,7 @@
 package com.it.shka.searchjobapp.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,11 +35,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.it.shka.searchjobapp.viewmodel.DataViewModel
 
 
 @Composable
-fun DetailsScreen(viewModel: DataViewModel){
+fun DetailsScreen(viewModel: DataViewModel, navController: NavController){
     val vacancy = viewModel.vacancyDetail.collectAsState()
     val statScroll = rememberScrollState()
 
@@ -55,6 +57,9 @@ fun DetailsScreen(viewModel: DataViewModel){
         ) {
             Icon(
                 modifier = Modifier
+                    .clickable{
+                       navController.popBackStack()
+                    }
                     .size(width = 24.dp, height = 24.dp),
                 painter = painterResource(R.drawable.icon_back),
                 tint = Color.White,
@@ -94,7 +99,6 @@ vacancy.value.forEach { vacancy->
                 .padding(16.dp)
                 .fillMaxWidth()
                 .verticalScroll(statScroll)
-               // .scrollable(statScroll, orientation = Orientation.Vertical)
         ) {
             //text title
             Text(
