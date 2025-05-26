@@ -29,7 +29,7 @@ fun MainSearch(viewModel:DataViewModel){
             VacanciesScreen(viewModel, navController)
         }
         composable (RouteMainSearch.DetailsScreen.route){
-            DetailsScreen(viewModel)
+            DetailsScreen(viewModel, navController)
         }
         dialog (RouteMainSearch.DialogScreen.route) {
             DialogScreen(navController,viewModel)
