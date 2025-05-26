@@ -52,42 +52,13 @@ import com.it.shka.searchjobapp.IconId
 import com.it.shka.searchjobapp.R
 import com.it.shka.searchjobapp.dialog.DialogScreen
 import com.it.shka.searchjobapp.dialog.DialogTwoScreen
+import com.it.shka.searchjobapp.rout.RouteMainSearch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun MainSearch(viewModel:DataViewModel){
 
-
-    val navController  = rememberNavController()
-    NavHost(
-        navController= navController,
-        startDestination= "start_search"
-    ){
-        composable("start_search"){
-            SearchScreen(viewModel, navController)
-        }
-        composable("vacancies") {
-            VacanciesScreen(viewModel, navController)
-        }
-        composable ("detaile"){
-           DetailsScreen(viewModel)
-            }
-       dialog ("dialog") {
-            DialogScreen(navController,viewModel)
-       }
-
-        dialog ("dialog_two"){
-            DialogTwoScreen(navController, viewModel)
-        }
-
-
-        }
-
-}
 
 
 
